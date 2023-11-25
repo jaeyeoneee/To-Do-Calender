@@ -5,9 +5,9 @@ import lombok.Data;
 @Data
 public class Member {
 
-    private Long id;
+    private Long memberId;
 
-    private String name;
+    private String memberName;
     private String email;
     private String password;
 
