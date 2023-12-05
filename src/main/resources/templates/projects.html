@@ -57,12 +57,17 @@
 <h2>Your Projects</h2>
 
 <!-- Loop through projects and display each project card -->
-<div th:each="project : ${projects}" class="project-card">
-    <h3 th:text="${project.projectName}"></h3>
-    <a th:href="@{/calendar/projects/update/{projectId}(projectId=${project.projectId})}" class="edit-icon">
+<div th:each="entry : ${projectTaskCountMap}" class="project-card">
+    <!-- 'entry.key' gives you the Project object, and 'entry.value' gives you the taskCount -->
+    <h3>
+        <span th:text="${entry.key.projectName}"></span>
+        <span th:text="' (task: ' + ${entry.value} + ')'"></span>
+    </h3>
+    <!-- You can access other properties of the Project object using 'entry.key' -->
+    <a th:href="@{/calendar/projects/update/{projectId}(projectId=${entry.key.projectId})}" class="edit-icon">
         <i class="fas fa-pencil-alt"></i>
     </a>
-    <a th:href="@{/calendar/projects/deleteCheck/{projectId}(projectId=${project.projectId})}" class="delete-icon">
+    <a th:href="@{/calendar/projects/deleteCheck/{projectId}(projectId=${entry.key.projectId})}" class="delete-icon">
         <i class="fas fa-times-circle"></i>
     </a>
     <!-- You can add more details if needed -->

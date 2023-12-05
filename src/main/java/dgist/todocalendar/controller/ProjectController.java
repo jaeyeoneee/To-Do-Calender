@@ -5,6 +5,7 @@ import dgist.todocalendar.domain.Project;
 import dgist.todocalendar.dto.project.ProjectSaveDto;
 import dgist.todocalendar.dto.project.ProjectUpdateDto;
 import dgist.todocalendar.service.ProjectService;
+import dgist.todocalendar.service.TaskService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -17,6 +18,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Controller
@@ -24,13 +27,20 @@ import java.util.List;
 public class ProjectController {
 
     private final ProjectService projectService;
+    private final TaskService taskService;
 
     @GetMapping("/calendar/projects")
     public String projects(@LoginMemberId Long memberId, Model model) {
 
         List<Project> projectsByMemberId = projectService.findProjectsByMemberId(memberId);
 
-        model.addAttribute("projects", projectsByMemberId);
+        Map<Project, Integer> projectTaskCountMap = projectsByMemberId.stream()
+                .collect(Collectors.toMap(
+                        project -> project,
+                        project -> taskService.countTasksByProjectId(project.getProjectId())
+                ));
+
+        model.addAttribute("projectTaskCountMap", projectTaskCountMap);
 
         return "projects";
     }
