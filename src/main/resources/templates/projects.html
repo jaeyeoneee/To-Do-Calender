@@ -1,0 +1,76 @@
+<!-- projects.html -->
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projects</title>
+    <!-- Include Font Awesome stylesheet for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .project-card {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 10px;
+            position: relative;
+        }
+
+        .edit-icon, .delete-icon {
+            position: absolute;
+            top: 5px;
+            font-size: 24px;
+        }
+
+        .edit-icon {
+            right: 35px; /* 수정 펜과의 간격 조정 */
+            color: #007bff;
+            cursor: pointer;
+        }
+
+        .delete-icon {
+            right: 5px;
+            color: #dc3545; /* 빨간색으로 변경 */
+            cursor: pointer;
+        }
+
+        .add-project-link {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .add-project-link a {
+            font-size: 20px;
+            text-decoration: none;
+            color: red; /* 빨간색으로 변경 */
+            margin-left: 5px;
+        }
+    </style>
+</head>
+<body>
+<!-- Back button to navigate to /calendar with icon -->
+<a th:href="@{/calendar}" style="font-size: 24px; text-decoration: none; color: #000;">
+    <i class="fas fa-chevron-left"></i> Back to Calendar
+</a>
+
+<h2>Your Projects</h2>
+
+<!-- Loop through projects and display each project card -->
+<div th:each="project : ${projects}" class="project-card">
+    <h3 th:text="${project.projectName}"></h3>
+    <a th:href="@{/calendar/projects/update/{projectId}(projectId=${project.projectId})}" class="edit-icon">
+        <i class="fas fa-pencil-alt"></i>
+    </a>
+    <a th:href="@{/calendar/projects/deleteCheck/{projectId}(projectId=${project.projectId})}" class="delete-icon">
+        <i class="fas fa-times-circle"></i>
+    </a>
+    <!-- You can add more details if needed -->
+</div>
+<!-- Link to add a new project -->
+<div class="add-project-link">
+    <span style="font-size: 24px;">+</span>
+    <a th:href="@{/calendar/projects/add}">Add a New Project</a>
+</div>
+</body>
+</html>

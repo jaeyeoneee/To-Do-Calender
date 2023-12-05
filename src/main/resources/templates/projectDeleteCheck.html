@@ -1,0 +1,60 @@
+<!-- delete-check.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete Project</title>
+    <!-- Include Font Awesome stylesheet for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .confirmation-message {
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            width: 200px;
+        }
+
+        .confirm-button, .cancel-button {
+            width: 48%;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .confirm-button {
+            background-color: #dc3545; /* 빨간색으로 변경 */
+            color: white;
+        }
+
+        .cancel-button {
+            background-color: #ccc;
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+<div class="confirmation-message">
+    정말 삭제하시겠습니까?
+</div>
+
+<div class="button-container">
+    <a th:href="@{/calendar/projects/delete/{projectId}(projectId=${projectId})}" class="confirm-button">확인</a>
+    <a th:href="@{/calendar/projects}" class="cancel-button">취소</a>
+</div>
+</body>
+</html>

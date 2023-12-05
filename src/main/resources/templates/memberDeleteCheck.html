@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>회원 탈퇴</title>
+
+  <!-- Font Awesome 스타일시트 링크 추가 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+  <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        nav {
+            background-color: #f1f1f1;
+            padding: 10px;
+        }
+
+        nav a {
+            margin-right: 10px;
+        }
+
+        .mypage-header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .mypage-content {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .box {
+            border: 1px solid #ccc;
+            padding: 20px;
+            width: 300px;
+            text-align: center;
+        }
+
+        button {
+            margin: 5px;
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        /* 화살표 아이콘 크기 조정 */
+        .arrow-icon {
+            font-size: 2em;
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+  <!-- 화살표 아이콘 추가 -->
+  <a href="/mypage"><i class="fas fa-arrow-left arrow-icon"></i></a>
+</nav>
+
+<div class="mypage-header">
+  <h1>회원 탈퇴</h1>
+</div>
+
+<div class="mypage-content">
+  <div class="box">
+    <p>정말 탈퇴하시겠습니까?</p>
+    <a href="/memberDelete"><button>확인</button></a>
+    <a href="/mypage"><button>취소</button></a>
+  </div>
+</div>
+
+</body>
+</html>

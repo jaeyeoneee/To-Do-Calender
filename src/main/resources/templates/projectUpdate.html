@@ -1,0 +1,92 @@
+<!-- update-project.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Project</title>
+    <!-- Include Font Awesome stylesheet for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .form-container {
+            width: 300px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+
+        .error-message {
+            color: red;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .submit-button, .cancel-button {
+            width: 48%;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .submit-button {
+            background-color: #4caf50;
+            color: white;
+        }
+
+        .cancel-button {
+            background-color: #ccc;
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+<h2>Update Project</h2>
+
+<div class="form-container">
+    <form th:action method="post" th:object="${projectUpdateDto}">
+        <div class="form-group">
+            <label for="projectName">Project Name:</label>
+            <input type="text" id="projectName" name="projectName" th:field="*{projectName}">
+            <p class="error-message" th:if="${#fields.hasErrors('projectName')}" th:errors="*{projectName}"></p>
+        </div>
+
+        <!-- You can add more form fields if needed -->
+
+        <div class="button-container">
+            <button type="submit" class="submit-button">확인</button>
+            <a th:href="@{/calendar/projects}" class="cancel-button">취소</a>
+        </div>
+    </form>
+</div>
+</body>
+</html>

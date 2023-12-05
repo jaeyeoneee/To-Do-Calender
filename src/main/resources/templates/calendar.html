@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main Page</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha384-wvu6o5uXz9q+j1MC3hPlVsPJvGeF5z3Lnp2ZJLQS9M2UnxWqtkNGVg7D2Y2znLZb" crossorigin="anonymous">
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+        }
+
+        .top-links {
+            position: fixed;
+            top: 0;
+            right: 0;
+            padding: 10px;
+            background-color: #f0f0f0;
+            z-index: 1;
+        }
+
+        .top-links a {
+            margin-right: 10px;
+            text-decoration: none;
+            color: #333;
+        }
+
+        .top-links a:hover {
+            color: #555;
+        }
+
+        .sidebar {
+            margin-top: 70px;
+            width: 25%;
+            box-sizing: border-box;
+            padding: 50px 20px;
+            background-color: #f0f0f0;
+        }
+
+        .sidebar h2 {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .sidebar ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .sidebar li {
+            margin-bottom: 5px;
+        }
+
+        .sidebar button {
+            margin-bottom: 5px;
+            cursor: pointer;
+            background-color: #fff;
+        }
+
+        .sidebar button.active {
+            background-color: #ddd;
+        }
+
+        #calendar {
+            flex: 1;
+            margin-top: 70px;
+        }
+
+            .sidebar-settings {
+        margin-top: 20px;
+    }
+
+    .sidebar-settings a {
+        text-decoration: none;
+        color: #333;
+        display: flex;
+        align-items: center;
+    }
+
+    .sidebar-settings a:hover {
+        color: #555;
+    }
+    #task-form {
+        margin-top: 60px;
+        margin-right: 20px; /* 오른쪽 여백 조정 */
+        padding: 20px;
+        background-color: #f0f0f0;
+        border-radius: 8px;
+        height: 100%; /* 높이를 100%로 설정하여 캘린더와 맞춤 */
+        box-sizing: border-box; /* 높이 계산에 padding 포함 */
+    }
+
+    #task-form label,
+    #task-form input,
+    #task-form select,
+    #task-form button {
+        display: block;
+        margin-bottom: 10px;
+    }
+
+    #task-delete-warn{
+        color:red;
+    }
+    </style>
+</head>
+<body>
+
+<div class="top-links">
+    <div>
+        <a href="/logout">로그아웃</a>
+        <a href="/mypage">마이페이지</a>
+    </div>
+</div>
+
+<div class="sidebar">
+    <h2>Projects</h2>
+    <ul>
+        <th:block th:each="project : ${projects}">
+            <li>
+                <button class="project-button" th:text="${project.projectName}" th:attr="data-projectid=${project.projectId}"></button>
+            </li>
+        </th:block>
+    </ul>
+
+    <div class="sidebar-settings">
+        <a href="/calendar/projects" style="color: red; text-decoration: none;">
+            <span> ⚙️ Project Setting</span>
+        </a>
+    </div>
+</div>
+
+<div id="calendar"></div>
+
+<form id="task-form">
+    <h4>Create Task</h4>
+    <label for="taskName">Task Name:</label>
+    <input type="text" id="taskName" name="taskName" required>
+
+    <label for="taskDate">Task Date:</label>
+    <input type="date" id="taskDate" name="taskDate" required>
+
+    <label for="project">Project:</label>
+    <select id="project" name="projectId" required>
+        <option value="">Select a project</option>
+        <!-- Iterate through projects and dynamically generate options -->
+        <th:block th:each="project : ${projects}">
+            <option th:value="${project.projectId}" th:text="${project.projectName}"></option>
+        </th:block>
+    </select>
+
+    <button type="button" onclick="saveTask()">Add Task</button>
+    <div id="task-delete-warn">If you want to delete task, Click Task on calendar</div>
+</form>
+</div>
+<script>
+    var calendar;
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+        calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            eventClick: function(info){
+                deleteEvent(info.event);
+            }
+        });
+        calendar.render();
+
+        var activeProjects = []; // Array to store active project IDs
+
+        // Add click event listener to project buttons
+        $('.project-button').on('click', function() {
+            var projectId = $(this).data('projectid');
+
+            // Toggle active state of the button
+            $(this).toggleClass('active');
+
+            // Check if the button is now active
+            var isActive = $(this).hasClass('active');
+
+            // Update active projects array
+            if (isActive) {
+                activeProjects.push(projectId);
+                loadTasks(projectId);
+            } else {
+                var index = activeProjects.indexOf(projectId);
+                if (index > -1) {
+                    activeProjects.splice(index, 1);
+                }
+                removeTasks(projectId);
+            }
+        });
+
+        function deleteEvent(event){
+            var confirm = window.confirm('삭제하시겠습니까?');
+
+            console.log(event.id);
+
+            if (confirm){
+                 $.ajax({
+                    type: 'POST',
+                    url: '/calendar/taskDelete',
+                    data: {
+                    taskId: event.id
+                    },
+                    success: function () {
+                        event.remove();
+                    },
+                    error: function (error) {
+                        console.error('Error deleting task:', error);
+                    }
+                });
+            }
+
+        }
+
+        // Function to load tasks for a specific project
+        function loadTasks(projectId) {
+            $.ajax({
+                type: 'POST',
+                url: '/calendar/loadTasks',
+                contentType: 'application/json',
+                data: JSON.stringify([projectId]),
+                success: function(tasks) {
+                    // Handle the tasks as needed
+                    console.log(tasks);
+
+                    // Add tasks to the calendar
+                    for (var i = 0; i < tasks.length; i++) {
+                        var task = tasks[i];
+                        console.log(task);
+                        calendar.addEvent({
+                            id: task.taskId, // Use task ID as a unique identifier
+                            title: task.taskName,
+                            start: task.date,
+                            end: task.date,
+                            allDay: true,
+                            extendedProps: {
+                                projectId: projectId
+                            }
+                        });
+                    }
+                },
+                error: function(error) {
+                    console.error('Error loading tasks:', error);
+                }
+            });
+        }
+
+        // Function to remove tasks for a specific project
+        function removeTasks(projectId) {
+            // Get all events in the calendar
+            var events = calendar.getEvents();
+
+            // Iterate through events and remove those related to the project
+            for (var i = 0; i < events.length; i++) {
+                var event = events[i];
+                if (event.extendedProps.projectId === projectId) {
+                    event.remove();
+                }
+            }
+        }
+    });
+
+    //태스크 저장 폼 실행
+        function saveTask() {
+        var taskName = $("#taskName").val();
+        var taskDate = $("#taskDate").val();
+        var projectId = $("#project").val();
+
+        var isActiveProject = $('.project-button[data-projectid="' + projectId + '"]').hasClass('active');
+
+        document.getElementById('task-form').reset();
+
+        $.ajax({
+            type: 'POST',
+            url: '/calendar/taskSave',
+            data: {
+                taskName: taskName,
+                taskDate: taskDate,
+                projectId: projectId
+            },
+            success: function(task) {
+            if (isActiveProject){
+                calendar.addEvent({
+                            id: task.taskId,
+                            title: task.taskName,
+                            start: task.date,
+                            end: task.date,
+                            allDay: true,
+                            extendedProps: {
+                                projectId: task.projectId
+                            }
+                        });
+
+                }
+            },
+            error: function(error) {
+                console.error('Error saving task:', error);
+            }
+        });
+    }
+</script>
+
+</body>
+</html>

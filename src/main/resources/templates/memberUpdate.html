@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>회원 정보 수정</title>
+
+    <!-- Font Awesome 스타일시트 링크 추가 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        nav {
+            background-color: #f1f1f1;
+            padding: 10px;
+        }
+
+        nav a {
+            margin-right: 10px;
+        }
+
+        .mypage-header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .mypage-content {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .box {
+            border: 1px solid #ccc;
+            padding: 20px;
+            width: 300px;
+            text-align: center;
+        }
+
+        button {
+            margin: 5px;
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        .info-label {
+            text-align: left;
+            margin-bottom: 10px;
+        }
+
+        .info-value {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 20px;
+            max-width: 100%;
+            overflow: hidden;
+        }
+
+        .error {
+            color: red;
+            margin-top: 5px;
+            font-size: 0.8em;
+        }
+
+        /* 화살표 아이콘 크기 조정 */
+        .arrow-icon {
+            font-size: 2em;
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <!-- 화살표 아이콘 추가 -->
+    <a href="/mypage"><i class="fas fa-arrow-left arrow-icon"></i></a>
+</nav>
+
+<div class="mypage-header">
+    <h1>회원 정보 수정</h1>
+</div>
+
+<div class="mypage-content">
+    <div class="box">
+        <form th:action="@{/memberUpdate}" method="post" th:object="${memberUpdateDto}">
+            <div class="info-label">회원이름</div>
+            <input type="text" id="name" name="name" th:field="*{name}">
+            <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="error"></span><br>
+            <button type="submit" style="margin-right: 5px;">확인</button>
+            <a href="/mypage"><button type="button" style="margin-left: 5px;">취소</button></a>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>
