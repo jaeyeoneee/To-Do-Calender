@@ -7,10 +7,14 @@ import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.sql.PreparedStatement;
 import java.util.Optional;
 
 @Slf4j
@@ -21,9 +25,20 @@ public class MysqlMemberRepository implements MemberRepository{
     private final JdbcTemplate jdbcTemplate;
 
     @Override
-    public void save(MemberJoinDto memberJoinDto) {
+    public Long save(MemberJoinDto memberJoinDto) {
         String sql = "insert into member(name, email, password) values (?, ?, ?)";
-        jdbcTemplate.update(sql, memberJoinDto.getName(), memberJoinDto.getEmail(), memberJoinDto.getPassword());
+
+        GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
+
+        jdbcTemplate.update((PreparedStatementCreator) con -> {
+            PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
+            ps.setString(1, memberJoinDto.getName());
+            ps.setString(2, memberJoinDto.getEmail());
+            ps.setString(3, memberJoinDto.getPassword());
+            return ps;
+        }, keyHolder);
+
+        return keyHolder.getKey().longValue();
     }
 
     @Override
@@ -39,15 +54,23 @@ public class MysqlMemberRepository implements MemberRepository{
     }
 
     @Override
-    public Member findById(Long memberId) {
+    public Optional<Member> findById(Long memberId) {
         String sql = "select * from member where id = ?";
-        return jdbcTemplate.queryForObject(sql, memberMapper(), memberId);
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, memberMapper(), memberId));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
-    public Member findByEmail(String email) {
+    public Optional<Member> findByEmail(String email) {
         String sql = "select * from member where email = ?";
-        return jdbcTemplate.queryForObject(sql, memberMapper(), email);
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, memberMapper(), email));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
