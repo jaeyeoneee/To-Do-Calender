@@ -78,4 +78,21 @@ class MysqlTaskRepositoryTest {
         assertTrue(tasksByProjectId.stream().anyMatch(p -> p.getTaskId().equals(taskId2)));
 
     }
+
+    @Test
+    @Transactional
+    void countTasksByProjectId() {
+        MemberJoinDto member = new MemberJoinDto("testName", "test@dgist.ac.kr", "testPassword");
+        Long memberId = mysqlMemberRepository.save(member);
+        ProjectSaveDto project1 = new ProjectSaveDto("testName1", memberId);
+        Long projectId1 = mysqlProjectRepository.save(project1);
+        TaskSaveDto task1 = new TaskSaveDto("testName1", LocalDate.parse("2023-12-04"), projectId1);
+        TaskSaveDto task2 = new TaskSaveDto("testName2", LocalDate.parse("2023-12-04"), projectId1);
+        Long taskId1 = mysqlTaskRepository.save(task1);
+        Long taskId2 = mysqlTaskRepository.save(task2);
+
+        Integer countTask = mysqlTaskRepository.countTasksByProjectId(projectId1);
+        assertEquals(2, countTask);
+
+    }
 }
