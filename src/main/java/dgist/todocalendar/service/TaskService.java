@@ -29,6 +29,10 @@ public class TaskService {
         return tasks;
     }
 
+    public Integer countTasksByProjectId(Long projectId) {
+        return mysqlTaskRepository.countTasksByProjectId(projectId);
+    }
+
     public Task save(TaskSaveDto taskSaveDto) {
         Long taskId = mysqlTaskRepository.save(taskSaveDto);
         return mysqlTaskRepository.findById(taskId).get();

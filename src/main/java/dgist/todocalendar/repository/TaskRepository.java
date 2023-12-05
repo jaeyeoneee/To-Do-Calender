@@ -15,4 +15,5 @@ public interface TaskRepository {
     Optional<Task> findById(Long taskId);
     List<Task> findTasksByProjectId(Long projectId);
 
+    Integer countTasksByProjectId(Long projectId);
 }

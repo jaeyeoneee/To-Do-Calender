@@ -76,6 +76,12 @@ public class MysqlTaskRepository implements TaskRepository {
         return jdbcTemplate.query(sql, taskMapper(), projectId);
     }
 
+    @Override
+    public Integer countTasksByProjectId(Long projectId) {
+        String sql = "select count(*) from task where project_id=?";
+        return jdbcTemplate.queryForObject(sql, Integer.class, projectId);
+    }
+
     private RowMapper<Task> taskMapper() {
         return (rs, rowNum) -> {
             Task task = new Task();
